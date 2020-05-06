@@ -10,7 +10,7 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
-const employeeArr = [];
+const employees = [];
 
 function init() {
 
@@ -27,7 +27,7 @@ function init() {
     ]).then(answer =>{
       console.log("User wants to create a new team? " + answer.createTeam);
       if(answer.createTeam === true){
-        //TODO
+        console.log("First select a role you want to create..")
       return chooseRole();
       }else{
         console.log ("Thank You for using TeamGenerator!!!")
@@ -40,7 +40,7 @@ function init() {
       {
         type: 'list',
         name: 'chooseRole',
-        message: 'Which type of team member would you like to add?',
+        message: 'Which type of team member role would you like to add?',
         choices: ["Manager", "Engineer", "Intern","I don't want to create Team"]
       }
     ]).then(result => {
@@ -120,8 +120,8 @@ function init() {
     ]).then(function (result){
       const { name, id, email, officeNumber } = result
       const managerUser = new Manager(name, id, email, officeNumber)
-      employeeArr.push(managerUser);
-      console.log(employeeArr);
+      employees.push(managerUser);
+      console.log(employees);
       addMoreEmloyees();
     })
   };
@@ -183,8 +183,8 @@ function init() {
     ]).then(function (result){
       const{name,id,email,github} = result
       const engineerUser = new Engineer(name, id, email, github)
-      employeeArr.push(engineerUser);
-      console.log(employeeArr);
+      employees.push(engineerUser);
+      console.log(employees);
       addMoreEmloyees();
     })
   };
@@ -246,8 +246,8 @@ function init() {
     ]).then(function(result){
       const{name,id,email,school} = result
       const internUser = new Intern(name, id, email, school)
-      employeeArr.push(internUser);
-      console.log(employeeArr);
+      employees.push(internUser);
+      console.log(employees);
       addMoreEmloyees();
     })
   };
@@ -271,13 +271,34 @@ function init() {
           break;
         case("I am done creating new roles"):
           console.log("Rendering the newly added employees...")
-          render(employeeArr);
+          render(employees);
+          writeEmployeehtml();
         default:
           console.log ("Thank You for using TeamGenerator!!!");
       }
     })
   }
 
+  function writeEmployeehtml(){
+    //check to see if output file exist
+    if(fs.existsSync(OUTPUT_DIR) === true){
+      fs.writeFile(outputPath, render(employees), (err) => {
+        if (err) throw err;
+        console.log("Thank You for using TeamGenerator!!!.. Your teampage has been generated successfully");
+      })
+    }else{
+      //create a output directory
+      fs.mkdir(OUTPUT_DIR, err => {
+        if(err)throw err;
+      });
+      fs.writeFile(outputPath, render(employees), (err) => {
+        if (err) throw err;
+        console.log("Thank You for using TeamGenerator!!!.. Your teampage has been generated successfully");
+      })
+    }
+  }
+
+  //Initiate creating Team
   createTeam();
 };
 init();
