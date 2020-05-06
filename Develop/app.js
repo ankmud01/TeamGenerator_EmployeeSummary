@@ -11,9 +11,6 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 const render = require("./lib/htmlRenderer");
 
 const employeeArr = [];
-const managerArr = [];
-const engineerArr = [];
-const internArr = [];
 
 function init() {
 
@@ -44,13 +41,12 @@ function init() {
         type: 'list',
         name: 'chooseRole',
         message: 'Which type of team member would you like to add?',
-        choices: ["Manager", "Engineer", "Intern", "I don't want to add any roles"]
+        choices: ["Manager", "Engineer", "Intern","I don't want to create Team"]
       }
     ]).then(result => {
-      const selectedrole = result.chooseRole
+      const selectedrole = result.chooseRole;
       switch(selectedrole){
         case ("Manager"):
-          //TODO - check if we alreaady have manager if not then create manager
           createManager();
           break;
         case("Engineer"):
@@ -73,15 +69,15 @@ function init() {
       {
         type: 'input',
         name: 'name',
-        message: 'What is the managers name?'
-        // validate: function(value){
-        //   const pass = value.match(/^[a-zA-Z ]{2,30}+$/i);
-        //   if (pass) {
-        //     return true;
-        //   }else{
-        //     return 'Please enter a valid name';
-        //   }
-        // }
+        message: 'What is the managers name?',
+        validate: function (value) {
+          var pass = value.match(/^[a-zA-Z ]+$/);
+          if (pass) {
+            return true;
+          }else{
+            return 'Please enter a valid name';
+          }
+        }
       },
       {
         type: 'input',
@@ -124,8 +120,9 @@ function init() {
     ]).then(function (result){
       const { name, id, email, officeNumber } = result
       const managerUser = new Manager(name, id, email, officeNumber)
-      managerArr.push(managerUser);
-      console.log(managerArr);
+      employeeArr.push(managerUser);
+      console.log(employeeArr);
+      addMoreEmloyees();
     })
   };
 
@@ -134,16 +131,15 @@ function init() {
         {
           type: 'input',
           name: 'name',
-          message: 'What is the engineers name?'
-          // validate: function (value) {
-          //   var pass = value.match(
-          //     /^[a-zA-Z ]{2,30}+$/i
-          //   );
-          //   if (pass) {
-          //     return true;
-          //   }
-          //   return 'Please enter a valid name';
-          // }
+          message: 'What is the engineers name?',
+          validate: function (value) {
+            var pass = value.match(/^[a-zA-Z ]+$/);
+            if (pass) {
+              return true;
+            }else{
+              return 'Please enter a valid name';
+            }
+          }
         },
         {
           type: 'input',
@@ -187,8 +183,9 @@ function init() {
     ]).then(function (result){
       const{name,id,email,github} = result
       const engineerUser = new Engineer(name, id, email, github)
-      engineerArr.push(engineerUser);
-      console.log(engineerArr);
+      employeeArr.push(engineerUser);
+      console.log(employeeArr);
+      addMoreEmloyees();
     })
   };
 
@@ -199,7 +196,7 @@ function init() {
         name: 'name',
         message: 'What is the interns name?',
         validate: function (value) {
-          var pass = value.match(/^[a-zA-Z ]{2,30}+$/i);
+          var pass = value.match(/^[a-zA-Z ]+$/);
           if (pass) {
             return true;
           }else{
@@ -238,7 +235,7 @@ function init() {
         name: 'school',
         message: 'What is the interns school name?',
         validate: function (value) {
-          var pass = value.match(/^[a-zA-Z ]{2,30}+$/i);
+          var pass = value.match(/^[a-zA-Z ]+$/);
           if (pass) {
             return true;
           }else{
@@ -249,52 +246,37 @@ function init() {
     ]).then(function(result){
       const{name,id,email,school} = result
       const internUser = new Intern(name, id, email, school)
-      internArr.push(internUser);
-      console.log(internArr);
+      employeeArr.push(internUser);
+      console.log(employeeArr);
+      addMoreEmloyees();
     })
   };
 
-  async function addMoreEmloyees(){
-    return inquirer.prompt([
+  function addMoreEmloyees(){
+    inquirer.prompt([
       {
-        type: 'confirm',
-        name: 'addTeamMember',
-        message: "Do you want to add another a team member?"
+        type: 'list',
+        name: 'moreRole',
+        message: 'Which type of team member would you like to add?',
+        choices: ["Engineer", "Intern", "I am done creating new roles"]
       }
-    ]).then((answer) => {
-      console.log("User wants to add new team member? " + answer.addTeamMember);
-      if(answer.addTeamMember === true){
-        buildteam();
-      }else{
-        console.log ("Thank You for using TeamGenerator!!!")
+    ]).then(result => {
+      const moreRole = result.moreRole;
+      switch(moreRole){
+        case("Engineer"):
+          createEngineer();
+          break;
+        case("Intern"):
+          createIntern();
+          break;
+        case("I am done creating new roles"):
+          console.log("Rendering the newly added employees...")
+          render(employeeArr);
+        default:
+          console.log ("Thank You for using TeamGenerator!!!");
       }
     })
   }
-
-  // async function buildteam() {
-  //   const role = await chooseRole()
-  //     .then((role) => {
-  //       console.log("So the user wants to create a - " + role);
-  //       if (role === "Manager") {
-  //         //TODO
-  //         return createManager();
-  //       }
-  //       else if (role === "Engineer") {
-  //         //TODO
-  //         return createEngineer();
-  //       }
-  //       else if (role === "Intern") {
-  //         //TODO
-  //         return createIntern();
-  //       }
-  //       else {
-  //         return console.log("Thank You for using TeamGenerator!!!")
-  //       }
-  //       //Will need to make this await till user answers other questions
-  //       //addMoreEmloyees(); 
-  //     })
-  // }
-
 
   createTeam();
 };
