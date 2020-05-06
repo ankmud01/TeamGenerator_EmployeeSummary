@@ -4,6 +4,8 @@ const Intern = require("./lib/Intern");
 const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
+const figlet = require("figlet");
+const chalk = require("chalk");
 
 const OUTPUT_DIR = path.resolve(__dirname, "output")
 const outputPath = path.join(OUTPUT_DIR, "team.html");
@@ -14,23 +16,33 @@ const employees = [];
 
 function init() {
 
-  //TODO - Welcome to Teambuilder App
-  console.log("Please answer following question to build team");
+  console.clear();
+  console.log(
+    chalk.greenBright(
+      figlet.textSync('Hi, from TEAM Generator', {
+        font: 'Star Wars',
+        horizontalLayout: 'default',
+        verticalLayout: 'default'
+      })
+    )
+  );
 
-  function createTeam(){
+  console.log("\n\n" + "Please answer following question to build team" + "\n");
+
+  function createTeam() {
     inquirer.prompt([
       {
         type: 'confirm',
         name: 'createTeam',
         message: "Do you want to create a team?"
       }
-    ]).then(answer =>{
-      console.log("User wants to create a new team? " + answer.createTeam);
-      if(answer.createTeam === true){
+    ]).then(answer => {
+      // console.log("User wants to create a new team? " + answer.createTeam);
+      if (answer.createTeam === true) {
         console.log("First select a role you want to create..")
-      return chooseRole();
-      }else{
-        console.log ("Thank You for using TeamGenerator!!!")
+        return chooseRole();
+      } else {
+        console.log(thankyouMessage());
       }
     })
   };
@@ -41,25 +53,23 @@ function init() {
         type: 'list',
         name: 'chooseRole',
         message: 'Which type of team member role would you like to add?',
-        choices: ["Manager", "Engineer", "Intern","I don't want to create Team"]
+        choices: ["Manager", "Engineer", "Intern", "I don't want to create Team"]
       }
     ]).then(result => {
       const selectedrole = result.chooseRole;
-      switch(selectedrole){
+      switch (selectedrole) {
         case ("Manager"):
           createManager();
           break;
-        case("Engineer"):
+        case ("Engineer"):
           createEngineer();
           break;
-        case("Intern"):
+        case ("Intern"):
           createIntern();
           break;
         default:
-          console.log ("Thank You for using TeamGenerator!!!");
+          console.log(thankyouMessage());
       }
-      //Will need to make this await till user answers other questions
-      //addMoreEmloyees(); 
     })
   }
 
@@ -74,7 +84,7 @@ function init() {
           var pass = value.match(/^[a-zA-Z ]+$/);
           if (pass) {
             return true;
-          }else{
+          } else {
             return 'Please enter a valid name';
           }
         }
@@ -103,7 +113,7 @@ function init() {
           }
           return 'Please enter a valid email address';
         }
-        
+
       },
       {
         type: 'input',
@@ -117,79 +127,79 @@ function init() {
           return 'Please enter a valid number';
         }
       }
-    ]).then(function (result){
+    ]).then(function (result) {
       const { name, id, email, officeNumber } = result
       const managerUser = new Manager(name, id, email, officeNumber)
       employees.push(managerUser);
-      console.log(employees);
+      // console.log(employees);
       addMoreEmloyees();
     })
   };
 
-  function createEngineer(){
+  function createEngineer() {
     inquirer.prompt([
-        {
-          type: 'input',
-          name: 'name',
-          message: 'What is the engineers name?',
-          validate: function (value) {
-            var pass = value.match(/^[a-zA-Z ]+$/);
-            if (pass) {
-              return true;
-            }else{
-              return 'Please enter a valid name';
-            }
-          }
-        },
-        {
-          type: 'input',
-          name: 'id',
-          message: 'What is the engineers id?',
-          validate: function (value) {
-            var pass = value.match(/^[a-z0-9]+$/i);
-            if (pass) {
-              return true;
-            }else{
-              return 'Please enter a valid id';
-            }
-          }
-        },
-        {
-          type: 'input',
-          name: 'email',
-          message: 'What is the engineers email-id?',
-          validate: function (value) {
-            var pass = value.match(/\S+@\S+\.\S+$/i);
-            if (pass) {
-              return true;
-            }else{
-              return 'Please enter a valid email address';
-            }
-          }
-        },
-        {
-          type: 'input',
-          name: 'github',
-          message: 'What is the engineers Github Username.',
-          validate: function (value) {
-            let pass = value.match(/^[0-9A-Za-z\s\-]+$/i);
-            if (pass) {
-              return true;
-            }else{
-              return 'Please enter a valid github username';
-            }
+      {
+        type: 'input',
+        name: 'name',
+        message: 'What is the engineers name?',
+        validate: function (value) {
+          var pass = value.match(/^[a-zA-Z ]+$/);
+          if (pass) {
+            return true;
+          } else {
+            return 'Please enter a valid name';
           }
         }
-    ]).then(function (result){
-      const{name,id,email,github} = result
+      },
+      {
+        type: 'input',
+        name: 'id',
+        message: 'What is the engineers id?',
+        validate: function (value) {
+          var pass = value.match(/^[a-z0-9]+$/i);
+          if (pass) {
+            return true;
+          } else {
+            return 'Please enter a valid id';
+          }
+        }
+      },
+      {
+        type: 'input',
+        name: 'email',
+        message: 'What is the engineers email-id?',
+        validate: function (value) {
+          var pass = value.match(/\S+@\S+\.\S+$/i);
+          if (pass) {
+            return true;
+          } else {
+            return 'Please enter a valid email address';
+          }
+        }
+      },
+      {
+        type: 'input',
+        name: 'github',
+        message: 'What is the engineers Github Username.',
+        validate: function (value) {
+          let pass = value.match(/^[0-9A-Za-z\s\-]+$/i);
+          if (pass) {
+            return true;
+          } else {
+            return 'Please enter a valid github username';
+          }
+        }
+      }
+    ]).then(function (result) {
+      const { name, id, email, github } = result
       const engineerUser = new Engineer(name, id, email, github)
       employees.push(engineerUser);
-      console.log(employees);
+      // console.log(employees);
       addMoreEmloyees();
     })
   };
 
-  function createIntern(){
+  function createIntern() {
     inquirer.prompt([
       {
         type: 'input',
@@ -199,7 +209,7 @@ function init() {
           var pass = value.match(/^[a-zA-Z ]+$/);
           if (pass) {
             return true;
-          }else{
+          } else {
             return 'Please enter a valid name';
           }
         }
@@ -212,7 +222,7 @@ function init() {
           var pass = value.match(/^[a-z0-9]+$/i);
           if (pass) {
             return true;
-          }else{
+          } else {
             return 'Please enter a valid id';
           }
         }
@@ -225,7 +235,7 @@ function init() {
           var pass = value.match(/\S+@\S+\.\S+$/i);
           if (pass) {
             return true;
-          }else{
+          } else {
             return 'Please enter a valid email address';
           }
         }
@@ -238,21 +248,21 @@ function init() {
           var pass = value.match(/^[a-zA-Z ]+$/);
           if (pass) {
             return true;
-          }else{
+          } else {
             return 'Please enter a valid school name';
           }
         }
       }
-    ]).then(function(result){
-      const{name,id,email,school} = result
+    ]).then(function (result) {
+      const { name, id, email, school } = result
       const internUser = new Intern(name, id, email, school)
       employees.push(internUser);
-      console.log(employees);
+      // console.log(employees);
       addMoreEmloyees();
     })
   };
 
-  function addMoreEmloyees(){
+  function addMoreEmloyees() {
     inquirer.prompt([
       {
         type: 'list',
@@ -262,40 +272,53 @@ function init() {
       }
     ]).then(result => {
       const moreRole = result.moreRole;
-      switch(moreRole){
-        case("Engineer"):
+      switch (moreRole) {
+        case ("Engineer"):
           createEngineer();
           break;
-        case("Intern"):
+        case ("Intern"):
           createIntern();
           break;
-        case("I am done creating new roles"):
-          console.log("Rendering the newly added employees...")
+        case ("I am done creating new roles"):
+          // console.log("Rendering the newly added employees...")
           render(employees);
           writeEmployeehtml();
         default:
-          console.log ("Thank You for using TeamGenerator!!!");
+          console.log(thankyouMessage());
       }
     })
   }
 
-  function writeEmployeehtml(){
+  function writeEmployeehtml() {
     //check to see if output file exist
-    if(fs.existsSync(OUTPUT_DIR) === true){
+    if (fs.existsSync(OUTPUT_DIR) === true) {
       fs.writeFile(outputPath, render(employees), (err) => {
         if (err) throw err;
         console.log("Thank You for using TeamGenerator!!!.. Your teampage has been generated successfully");
       })
-    }else{
+    } else {
       //create a output directory
       fs.mkdir(OUTPUT_DIR, err => {
-        if(err)throw err;
+        if (err) throw err;
       });
       fs.writeFile(outputPath, render(employees), (err) => {
         if (err) throw err;
         console.log("Thank You for using TeamGenerator!!!.. Your teampage has been generated successfully");
       })
     }
+  }
+
+  const thankyouMessage = () => {
+    console.clear();
+    console.log(
+      chalk.greenBright(
+        figlet.textSync("ThankYou!!!", {
+          font: 'Star Wars',
+          horizontalLayout: 'default',
+          verticalLayout: 'default'
+        })
+      )
+    );
   }
 
   //Initiate creating Team
