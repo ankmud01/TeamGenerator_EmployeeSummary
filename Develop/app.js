@@ -120,7 +120,7 @@ function init() {
         name: 'officeNumber',
         message: 'What is the managers office number?',
         validate: function (value) {
-          const pass = value.match(/^[0-9]$/);
+          const pass = value.match(/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im);
           if (pass) {
             return true;
           }
